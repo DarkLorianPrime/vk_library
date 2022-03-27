@@ -76,8 +76,8 @@ class Main:
             'ts': str(self.ts[0])
         }
         update_data = requests.post(url=self.server, data=payload)
-        if update_data.json().get("error") is not None:
-            error = update_data.json()["error"]
+        if update_data.json().get("failed") is not None:
+            error = update_data.json()["failed"]
             updated_data = update_server()
             print(error)
             if error == 2:
