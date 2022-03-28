@@ -13,15 +13,12 @@ def custom_hello(**kwargs):
     vk.messages.send(**send_id, message=f"Привет, {kwargs['splited'][1]}!", random_id=0)
 
 
-@command_handler("hello, niggers", "pizdec")
+@command_handler("hello?", "hi?")
 def standart_hello(**kwargs):
     send_id = user_or_chat(kwargs['raw'])
-    vk.messages.send(**send_id, message="И тебе привет, knigga!", random_id=0)
+    vk.messages.send(**send_id, message="И тебе привет, хе-хе", random_id=0)
 
 
 for vk_object in VKLongPoll().listen():
     if vk_object.type == NEW:
         CommandHandler().check_updates(vk_object)
-        if vk_object.text == "hello":
-            send_id = user_or_chat(vk_object)
-            vk.messages.send(**send_id, message="И тебе привет, путник!", random_id=0)

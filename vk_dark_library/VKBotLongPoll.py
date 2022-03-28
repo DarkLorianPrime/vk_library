@@ -22,7 +22,8 @@ class load_config:
 
 
 class EventInformation:
-    __slots__ = ["clear_query", "group_id", "chat_id", "message", "type", "text", "from_id", "peer_id"]
+    __slots__ = ["payload", "clear_query", "group_id", "chat_id", "message", "type", "text", "from_id", "peer_id",
+                 "conversation_message_id"]
 
     def __init__(self, raw_query):
         if data["token"] is None:
@@ -37,6 +38,8 @@ class EventInformation:
         self.peer_id = self.clear_query['message']['peer_id']
         self.message = self.clear_query['message']
         self.text = self.clear_query['message']['text']
+        self.payload = self.clear_query['message'].get("payload")
+        self.conversation_message_id = self.clear_query["message"]["conversation_message_id"]
 
 
 def update_server():
@@ -49,7 +52,7 @@ def update_server():
     return requests.get(url=vk_api_url + "groups.getLongPollServer", params=payload).json()
 
 
-class Main:
+class VKLongPoll:
     def __init__(self):
         self.ts = []
         if data["token"] is None:
@@ -67,8 +70,6 @@ class Main:
         response_data = response['response']
         if len(self.ts) == 0:
             self.ts.append(response_data['ts'])
-        self.key = response_data['key']
-        self.server = response_data['server']
         payload = {
             'act': 'a_check',
             'key': str(self.key),
@@ -79,20 +80,21 @@ class Main:
         if update_data.json().get("failed") is not None:
             error = update_data.json()["failed"]
             updated_data = update_server()
-            print(error)
             if error == 2:
                 self.key = updated_data["response"]["key"]
             return update_data
-        print(update_data.json())
         self.ts = [update_data.json()['ts']]
         return update_data
 
     def listen(self):
         while True:
             call = self.one_listen().json()
-            if call.get("error") is None:
+            if call.get("failed") is None:
                 for information in call["updates"]:
                     yield EventInformation(information)
+
+    def listen_decorators(self):
+        pass
 
 
 class get_api(object):
