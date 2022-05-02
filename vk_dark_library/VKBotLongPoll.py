@@ -4,8 +4,6 @@ import os
 import sys
 
 import requests
-import aiofiles
-import asyncio
 from vk_dark_library.VKErrorLibrary import LongpollConnectionError, ApiMethodError
 from vk_dark_library.VKUtils import VKcolors, LONGPOLL_VERSION
 
