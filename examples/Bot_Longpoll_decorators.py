@@ -1,22 +1,20 @@
 import os
 
-from vk_dark_library.VKBotLongPoll import VKLongPoll, load_config, get_api, NEW, user_or_chat
+from vk_dark_library.VKBotLongPoll import VKLongPoll, LoadConfig, GetApi, NEW
 from vk_dark_library.VKCommandHandler import CommandHandler, command_handler, search_command_handler
 
-load_config(os.getcwd(), "config")
-vk = get_api()
+LoadConfig(os.getcwd(), "config")
+vk = GetApi()
 
 
 @search_command_handler(["hellos", ' | '], ["hi", ' | '])
-def custom_hello(**kwargs):
-    send_id = user_or_chat(kwargs['raw'])
-    vk.messages.send(**send_id, message=f"Привет, {kwargs['splited'][1]}!", random_id=0)
+def custom_hello(raw, splited_text):
+    vk.messages.send(**raw.send_id, message=f"Привет, {splited_text[1]}!", random_id=0)
 
 
 @command_handler("hello?", "hi?")
-def standart_hello(**kwargs):
-    send_id = user_or_chat(kwargs['raw'])
-    vk.messages.send(**send_id, message="И тебе привет, хе-хе", random_id=0)
+def standart_hello(raw):
+    vk.messages.send(**raw.send_id, message="И тебе привет, хе-хе", random_id=0)
 
 
 for vk_object in VKLongPoll().listen():
