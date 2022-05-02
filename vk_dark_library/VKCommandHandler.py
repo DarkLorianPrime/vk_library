@@ -34,34 +34,23 @@ def json_command_handler(*args):
 
 
 class CommandHandler:
-    def get_commands(self):
-        return commands, json_commands, search_commands
-
     def check_updates(self, raw: EventInformation):
         lower = raw.text.lower()
         if commands.get(lower) is not None:
-            commands[lower](chat_id=raw.chat_id, peer_id=raw.peer_id, text=raw.text, user_id=raw.from_id, raw=raw)
+            commands[lower](raw)
             return
 
         for i in search_commands:
             if re.search(i, lower):
                 splited = raw.text.split(search_commands[i][1])
                 if len(splited) > 1:
-                    search_commands[i][0](chat_id=raw.chat_id, peer_id=raw.peer_id, text=raw.text, user_id=raw.from_id,
-                                          splited=splited, conversation_message_id=raw.conversation_message_id,
-                                          raw=raw)
+                    search_commands[i][0](raw, splited_text=splited)
                     return
 
         if raw.payload is not None:
             payload_data = raw.payload
             load = json.loads(payload_data)
             button = load.get("button")
-            if button is None:
-                button = "page"
-            if load.get("button") is None and load.get(button) is None:
-                button = "group"
             if json_commands.get(button) is not None:
-                json_commands[button](chat_id=raw.chat_id, peer_id=raw.peer_id, text=raw.text, user_id=raw.from_id,
-                                      payload=load.get(button), conversation_message_id=raw.conversation_message_id,
-                                      raw=raw)
+                json_commands[button](raw)
             return
